@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'productId',
         as: 'Variants'
       });
-      products.belongsTo(models.Business, {
-        foreignKey: 'businessId',
-        as: 'Business'
-      });
     }
   }
   products.init({
@@ -29,20 +25,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       primaryKey: true,
     },
-     businessId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-      },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     desc: {
       type: DataTypes.STRING
-    },
-    isVariable: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -53,21 +41,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 0.00
     },
-    stock: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    purchasePrice: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      defaultValue: 0.00,
-      comment: 'Cost price for profit calculation'
-    },
-    profitMargin: {
-      type: DataTypes.DECIMAL(5, 2),
-      allowNull: true,
-      comment: 'Profit margin percentage'
-    }
   },
 
     {

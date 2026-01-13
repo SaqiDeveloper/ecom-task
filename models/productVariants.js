@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'productId',
         as: 'Product'
       });
-      productVariants.belongsTo(models.Business, {
-        foreignKey: 'businessId',
-        as: 'Business'
-      });
     }
   }
   productVariants.init({
@@ -28,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: Sequelize.literal("gen_random_uuid()"),
       allowNull: false,
       primaryKey: true,
-    },
-    businessId: {
-      type: DataTypes.UUID,
-      allowNull: false,
     },
     productId: {
       type: DataTypes.UUID,

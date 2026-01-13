@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 
 const createVariant = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, productId } = req.params;
+    const { productId } = req.params;
 
     const product = await products.findByPk(productId);
 
@@ -20,7 +20,6 @@ const createVariant = asyncErrorHandler(async (req, res) => {
     const { name, price, purchasePrice, profitMargin, stock , attributes} = req.body;
 
     const newVariant = await productVariants.create({
-        businessId: businessId,
         productId: productId,
         name: name,
         price: price,
@@ -40,7 +39,7 @@ const createVariant = asyncErrorHandler(async (req, res) => {
 
 const getVariant = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, productId } = req.params;
+    const { productId } = req.params;
 
     const product = await products.findByPk(productId);
 
@@ -63,8 +62,6 @@ const getVariant = asyncErrorHandler(async (req, res) => {
 });
 
 const getAllVariants = asyncErrorHandler(async (req, res) => {
-    const { businessId } = req.params;
-
     try {
         let where = {}
         if (req?.query?.search && req.query.search.trim() !== "") {
@@ -73,12 +70,8 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
             };
         }
 
-        // Query variants directly using businessId
         const variants = await productVariants.findAll({
-            where: { 
-                businessId: businessId,
-                ...where
-            },
+            where: where,
             ...req.pagination
         });
 
@@ -99,7 +92,7 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
 
 const updateVariant = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, variantId } = req.params;
+    const { variantId } = req.params;
 
     const variant = await productVariants.findByPk(variantId);
 
@@ -130,7 +123,7 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
 
 const deleteVariant = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, variantId } = req.params;
+    const { variantId } = req.params;
 
     const variant = await productVariants.findByPk(variantId);
 

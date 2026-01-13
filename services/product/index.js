@@ -9,12 +9,9 @@ const { Op } = require('sequelize');
 
 const createProduct = asyncErrorHandler(async (req, res) => {
 
-    const { businessId } = req.params;
-
     const { name, desc, isVariable, isActive, price, purchasePrice, profitMargin, stock } = req.body;
 
     const newProduct = await products.create({
-        businessId: businessId,
         name: name,
         desc: desc,
         isVariable: isVariable || false,
@@ -37,7 +34,7 @@ const createProduct = asyncErrorHandler(async (req, res) => {
 
 const getProduct = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, productId } = req.params;
+    const { productId } = req.params;
 
     const product = await products.findByPk(productId);
 
@@ -57,8 +54,6 @@ const getProduct = asyncErrorHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncErrorHandler(async (req, res) => {
-    const { businessId } = req.params;
-
     let where = {}
     if (req?.query?.search && req.query.search.trim() !== "") {
         where.name = {
@@ -67,7 +62,7 @@ const getAllProducts = asyncErrorHandler(async (req, res) => {
     }
 
     const { rows, count } = await products.findAndCountAll({
-        where: { businessId: businessId },
+        where: where,
         ...req.pagination
     });
 
@@ -82,7 +77,7 @@ const getAllProducts = asyncErrorHandler(async (req, res) => {
 
 const updateProduct = asyncErrorHandler(async (req, res) => {
 
-    const { businessId , productId } = req.params;
+    const { productId } = req.params;
 
     const product = await products.findByPk(productId);
 
@@ -114,7 +109,7 @@ const updateProduct = asyncErrorHandler(async (req, res) => {
 
 
 const deleteProduct = asyncErrorHandler(async (req, res) => {
- const { businessId , productId } = req.params;
+ const { productId } = req.params;
 
     const product = await products.findByPk(productId);
 

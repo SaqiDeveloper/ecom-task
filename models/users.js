@@ -4,12 +4,7 @@ const { Model, Sequelize, DataTypes } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // User.hasMany(models.BusinessUser, { foreignKey: 'userId', as: 'businessUsers' });
-      User.belongsToMany(models.Business, {
-        through: models.BusinessUser,
-        as: "businesses",
-        foreignKey: "userId",
-      });
+      // Associations can be added here if needed
     }
   }
   User.init({
