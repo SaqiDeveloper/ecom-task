@@ -29,46 +29,30 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    sku: {
+    variantsName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      defaultValue: Sequelize.literal(`'SKU-' || nextval('product_variant_sku_seq')`)
     },
-    name: {
+    value: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     price: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       defaultValue: 0.00
     },
-    stock: {
-      type: DataTypes.INTEGER
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    },
-    attributes: {
-      type: DataTypes.JSONB,
-      allowNull: true
-    },
-    purchasePrice: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      defaultValue: 0.00,
-      comment: 'Cost price for profit calculation'
-    },
-    profitMargin: {
-      type: DataTypes.DECIMAL(5, 2),
-      allowNull: true,
-      comment: 'Profit margin percentage'
+    sku: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      defaultValue: Sequelize.literal("'SKU-' || LPAD(nextval('product_variant_sku_seq')::text, 6, '0')"),
     },
   }, {
     sequelize,
     modelName: 'productVariants',
+    timestamps: true,
+    underscored: false,
   });
   return productVariants;
 };

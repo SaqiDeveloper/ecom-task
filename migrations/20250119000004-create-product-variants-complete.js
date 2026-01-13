@@ -2,7 +2,11 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Create productVariants table with all features
+    // Create sequence for SKU
+    await queryInterface.sequelize.query(`
+      CREATE SEQUENCE IF NOT EXISTS product_variant_sku_seq START 1;
+    `);
+
     await queryInterface.createTable('productVariants', {
       id: {
         type: Sequelize.UUID,
@@ -20,50 +24,47 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      name: {
+      variantsName: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      sku: {
+      value: {
         type: Sequelize.STRING,
-        allowNull: true,
-        unique: true,
+        allowNull: false,
       },
       price: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
         defaultValue: 0.00,
       },
-      stock: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-      },
-      attributes: {
-        type: Sequelize.JSONB,
-        allowNull: true,
-      },
-      isActive: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
+      sku: {
+        type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
+        defaultValue: Sequelize.literal("'SKU-' || LPAD(nextval('product_variant_sku_seq')::text, 6, '0')"),
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
 
     // Add indexes for better performance
     await queryInterface.addIndex('productVariants', ['productId']);
     await queryInterface.addIndex('productVariants', ['sku']);
-    await queryInterface.addIndex('productVariants', ['isActive']);
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('productVariants');
+    // Drop sequence
+    await queryInterface.sequelize.query(`
+      DROP SEQUENCE IF EXISTS product_variant_sku_seq;
+    `);
   }
 };

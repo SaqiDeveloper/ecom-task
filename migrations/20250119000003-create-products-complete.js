@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Create products table with all features including price and stock
     await queryInterface.createTable('products', {
       id: {
         type: Sequelize.UUID,
@@ -18,10 +17,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      isVariable: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
@@ -31,23 +26,20 @@ module.exports = {
         allowNull: true,
         defaultValue: 0.00
       },
-      stock: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-      },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     });
 
     // Add indexes for better performance
     await queryInterface.addIndex('products', ['name']);
-    await queryInterface.addIndex('products', ['isVariable']);
     await queryInterface.addIndex('products', ['isActive']);
   },
 

@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
-    price: {
+    basePrice: {
       type: DataTypes.DECIMAL,
       allowNull: true,
       defaultValue: 0.00
@@ -46,6 +46,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'products',
+      timestamps: true,
+      underscored: false,
     });
   return products;
 };

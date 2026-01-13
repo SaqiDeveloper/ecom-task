@@ -17,16 +17,14 @@ const createVariant = asyncErrorHandler(async (req, res) => {
         })
     }
 
-    const { name, price, purchasePrice, profitMargin, stock , attributes} = req.body;
+    const { variantsName, value, price } = req.body;
 
     const newVariant = await productVariants.create({
         productId: productId,
-        name: name,
+        variantsName: variantsName,
+        value: value,
         price: price,
-        purchasePrice: purchasePrice || 0.00,
-        profitMargin: profitMargin || 0.00,
-        stock: stock,
-        attributes:attributes
+        // sku will be auto-generated
     });
 
     res.status(STATUS_CODES.SUCCESS).json({
@@ -65,7 +63,7 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
     try {
         let where = {}
         if (req?.query?.search && req.query.search.trim() !== "") {
-            where.name = {
+            where.variantsName = {
                 [Op.iLike]: `${req.query.search}%`
             };
         }
@@ -103,15 +101,12 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
         })
     }
 
-    const { sku, name, price, purchasePrice, profitMargin, stock , attributes} = req.body;
+    const { variantsName, value, price } = req.body;
     
-    if (sku) variant.sku = sku;
-    if (name) variant.name = name;
-    if (price) variant.price = price;
-    if (purchasePrice !== undefined) variant.purchasePrice = purchasePrice;
-    if (profitMargin !== undefined) variant.profitMargin = profitMargin;
-    if (stock) variant.stock = stock;
-    if (attributes) variant.attributes = attributes;
+    if (variantsName) variant.variantsName = variantsName;
+    if (value) variant.value = value;
+    if (price !== undefined) variant.price = price;
+    // SKU is auto-generated and cannot be updated
 
     await variant.save();
 
