@@ -50,15 +50,23 @@ const checkout = asyncErrorHandler(async (req, res) => {
 
     // Create order using transaction
     const order = await sequelize.transaction(async (t) => {
-        // Create order
-        const newOrder = await orders.create({
-            userId: userId,
-            cartId: cart.id,
-            totalAmount: cart.totalAmount,
-            shippingAddress: shippingAddress || null,
-            status: 'pending',
-            paymentStatus: 'pending',
-        }, { transaction: t });
+          // Generate order number
+          const orderNumberResult = await sequelize.query(
+              "SELECT 'ORD-' || LPAD(nextval('order_number_seq')::text, 8, '0') as order_number",
+              { type: sequelize.QueryTypes.SELECT, transaction: t }
+          );
+          const orderNumber = orderNumberResult[0].order_number;
+
+          // Create order
+          const newOrder = await orders.create({
+              userId: userId,
+              cartId: cart.id,
+              orderNumber: orderNumber,
+              totalAmount: cart.totalAmount,
+              shippingAddress: shippingAddress || null,
+              status: 'pending',
+              paymentStatus: 'pending',
+          }, { transaction: t });
 
         // Create order items from cart items
         const orderItemsData = cart.CartItems.map(item => ({
