@@ -6,7 +6,6 @@ module.exports = {
       { url: "/admin/login", method: "POST" },
       { url: "/otp/request", method: "POST" },
       { url: "/otp/verify", method: "POST" },
-      { url: "/file-upload", method: "POST" },
       // { url: "/^\/api\/v1\/test\/*/", method: "PATCH" },
     ],
   },

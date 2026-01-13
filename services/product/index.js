@@ -1,5 +1,4 @@
 const asyncErrorHandler = require("../../utils/asyncErrorHandler");
-const withTransaction = require("../../utils/withTransaction");
 const { STATUS_CODES, TEXTS } = require("../../config/constants");
 const { products } = require('../../models');
 const {paginatedResponse} = require('../../middlewares/paginate');
