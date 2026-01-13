@@ -24,7 +24,6 @@ const createVariant = asyncErrorHandler(async (req, res) => {
         variantsName: variantsName,
         value: value,
         price: price,
-        // sku will be auto-generated
     });
 
     res.status(STATUS_CODES.SUCCESS).json({
@@ -106,7 +105,6 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
     if (variantsName) variant.variantsName = variantsName;
     if (value) variant.value = value;
     if (price !== undefined) variant.price = price;
-    // SKU is auto-generated and cannot be updated
 
     await variant.save();
 

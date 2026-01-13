@@ -1,9 +1,3 @@
-/**
- * Queue Monitoring Utility
- * Monitor queue health and statistics for BullMQ
- * Run: node utils/queue-monitor.js
- */
-
 const { getQueueStats, healthCheck, paymentQueue, notificationQueue, orderQueue } = require('../config/queue');
 
 const monitorQueues = async () => {

@@ -7,11 +7,9 @@ const { User, Otp } = require('../../models');
 const { isSuperAdmin } = require("../../middlewares/admin.middleware");
 const { Op } = require('sequelize');
 
-
 const signUp = asyncErrorHandler(async (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  // Check if user already exists with email
   const existingUserByEmail = await User.findOne({
     where: { email: email },
   });
@@ -23,7 +21,6 @@ const signUp = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Check if user already exists with phone (if provided)
   if (phone) {
     const existingUserByPhone = await User.findOne({
       where: { phone: phone },
@@ -37,10 +34,8 @@ const signUp = asyncErrorHandler(async (req, res) => {
     }
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create user
   const newUser = await User.create({
     name: name,
     email: email,
@@ -49,7 +44,6 @@ const signUp = asyncErrorHandler(async (req, res) => {
     isSuperAdmin: false,
   });
 
-  // Generate token
   const userData = {
     id: newUser.id,
     name: newUser.name,
@@ -71,7 +65,6 @@ const signUp = asyncErrorHandler(async (req, res) => {
 const login = asyncErrorHandler(async (req, res) => {
   const { email, phone, password } = req.body;
 
-  // Find user by email or phone
   const whereClause = email ? { email: email } : { phone: phone };
   
   const user = await User.findOne({
@@ -86,7 +79,6 @@ const login = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Verify password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
@@ -96,7 +88,6 @@ const login = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Generate token
   const userData = {
     id: user.id,
     name: user.name,
@@ -119,7 +110,6 @@ const login = asyncErrorHandler(async (req, res) => {
 const adminLogin = asyncErrorHandler(async (req, res) => {
   const { email, phone, password } = req.body;
 
-  // Find user by email or phone (must be super admin)
   const whereClause = email 
     ? { email: email, isSuperAdmin: true } 
     : { phone: phone, isSuperAdmin: true };
@@ -136,7 +126,6 @@ const adminLogin = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Verify password
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
@@ -146,7 +135,6 @@ const adminLogin = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Generate token
   const userData = {
     id: user.id,
     name: user.name,
@@ -165,12 +153,9 @@ const adminLogin = asyncErrorHandler(async (req, res) => {
   });
 });
 
-
-// Request OTP for login
 const requestOTP = asyncErrorHandler(async (req, res) => {
   const { email, phone } = req.body;
 
-  // Check if user exists
   const whereClause = email ? { email: email } : { phone: phone };
   const user = await User.findOne({
     where: whereClause,
@@ -184,14 +169,10 @@ const requestOTP = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Generate OTP
   const otp = generateOTP();
   const otpHash = await hashOTP(otp);
-
-  // Set expiration to 5 minutes from now
   const expiresAt = getOTPExpiration();
 
-  // Invalidate any existing unused OTPs for this user/email/phone
   await Otp.update(
     { isUsed: true },
     {
@@ -207,7 +188,6 @@ const requestOTP = asyncErrorHandler(async (req, res) => {
     }
   );
 
-  // Create new OTP record
   await Otp.create({
     userId: user.id,
     email: email || null,
@@ -218,24 +198,18 @@ const requestOTP = asyncErrorHandler(async (req, res) => {
     isUsed: false,
   });
 
-  // TODO: Send OTP via email or SMS service
-  // For now, we'll just log it (in production, use email/SMS service)
-  console.log(`OTP for ${email || phone}: ${otp}`); // Remove this in production
+  console.log(`OTP for ${email || phone}: ${otp}`);
 
   res.status(STATUS_CODES.SUCCESS).json({
     statusCode: STATUS_CODES.SUCCESS,
     message: TEXTS.OTP_SENT,
-    // In production, don't send OTP in response
-    // For development/testing only:
     otp: process.env.NODE_ENV === 'development' ? otp : undefined,
   });
 });
 
-// Verify OTP and login
 const verifyOTP = asyncErrorHandler(async (req, res) => {
   const { email, phone, otp } = req.body;
 
-  // Find user
   const whereClause = email ? { email: email } : { phone: phone };
   const user = await User.findOne({
     where: whereClause,
@@ -249,7 +223,6 @@ const verifyOTP = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Find valid OTP
   const otpRecord = await Otp.findOne({
     where: {
       [Op.or]: [
@@ -271,7 +244,6 @@ const verifyOTP = asyncErrorHandler(async (req, res) => {
     });
   }
 
-  // Verify OTP
   const isOTPValid = await verifyOTPHash(otp, otpRecord.otpHash);
 
   if (!isOTPValid) {

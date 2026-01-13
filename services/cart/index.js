@@ -4,7 +4,6 @@ const { carts, cartItems, products, productVariants } = require('../../models');
 const { Op } = require('sequelize');
 const Sequelize = require('sequelize');
 
-// Get or create active cart for user
 const getOrCreateCart = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
 
@@ -45,12 +44,9 @@ const getOrCreateCart = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Add item to cart
 const addItemToCart = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { productId, variantId, quantity } = req.body;
-
-    // Get or create cart
     let cart = await carts.findOne({
         where: {
             userId: userId,
@@ -66,7 +62,6 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
         });
     }
 
-    // Validate product
     const product = await products.findByPk(productId);
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
@@ -75,7 +70,6 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
         });
     }
 
-    // Validate variant if provided
     let variant = null;
     let itemPrice = product.price || 0.00;
 
@@ -96,7 +90,6 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
         itemPrice = variant.price;
     }
 
-    // Check if item already exists in cart
     const existingItem = await cartItems.findOne({
         where: {
             cartId: cart.id,
@@ -107,13 +100,11 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
 
     let cartItem;
     if (existingItem) {
-        // Update quantity
         existingItem.quantity += quantity;
         existingItem.subtotal = existingItem.quantity * itemPrice;
         await existingItem.save();
         cartItem = existingItem;
     } else {
-        // Create new item
         cartItem = await cartItems.create({
             cartId: cart.id,
             productId: productId,
@@ -124,7 +115,6 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
         });
     }
 
-    // Update cart total
     await updateCartTotal(cart.id);
 
     res.status(STATUS_CODES.SUCCESS).json({
@@ -134,7 +124,6 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Update cart item quantity
 const updateCartItem = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { itemId } = req.params;
@@ -164,7 +153,6 @@ const updateCartItem = asyncErrorHandler(async (req, res) => {
     cartItem.subtotal = quantity * cartItem.price;
     await cartItem.save();
 
-    // Update cart total
     await updateCartTotal(cartItem.cartId);
 
     res.status(STATUS_CODES.SUCCESS).json({
@@ -174,12 +162,10 @@ const updateCartItem = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Remove item from cart
 const removeCartItem = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { itemId } = req.params;
 
-    // Find cart item and verify it belongs to user's cart
     const cartItem = await cartItems.findOne({
         where: { id: itemId },
         include: [{
@@ -202,7 +188,6 @@ const removeCartItem = asyncErrorHandler(async (req, res) => {
     const cartId = cartItem.cartId;
     await cartItem.destroy();
 
-    // Update cart total
     await updateCartTotal(cartId);
 
     res.status(STATUS_CODES.SUCCESS).json({
@@ -211,7 +196,6 @@ const removeCartItem = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Clear cart
 const clearCart = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
 
@@ -242,7 +226,6 @@ const clearCart = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Helper function to update cart total
 const updateCartTotal = async (cartId) => {
     const result = await cartItems.findAll({
         where: { cartId: cartId },

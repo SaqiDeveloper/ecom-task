@@ -6,12 +6,10 @@ const { Op } = require('sequelize');
 const Sequelize = require('sequelize');
 const { sequelize } = require('../../models');
 
-// Checkout - Create order from cart
 const checkout = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { shippingAddress, paymentMethod } = req.body;
 
-    // Get active cart
     const cart = await carts.findOne({
         where: {
             userId: userId,
@@ -48,16 +46,13 @@ const checkout = asyncErrorHandler(async (req, res) => {
         });
     }
 
-    // Create order using transaction
     const order = await sequelize.transaction(async (t) => {
-          // Generate order number
           const orderNumberResult = await sequelize.query(
               "SELECT 'ORD-' || LPAD(nextval('order_number_seq')::text, 8, '0') as order_number",
               { type: sequelize.QueryTypes.SELECT, transaction: t }
           );
           const orderNumber = orderNumberResult[0].order_number;
 
-          // Create order
           const newOrder = await orders.create({
               userId: userId,
               cartId: cart.id,
@@ -66,9 +61,8 @@ const checkout = asyncErrorHandler(async (req, res) => {
               shippingAddress: shippingAddress || null,
               status: 'pending',
               paymentStatus: 'pending',
-          }, { transaction: t });
+            }, { transaction: t });
 
-        // Create order items from cart items
         const orderItemsData = cart.CartItems.map(item => ({
             orderId: newOrder.id,
             productId: item.productId,
@@ -80,7 +74,6 @@ const checkout = asyncErrorHandler(async (req, res) => {
 
         await orderItems.bulkCreate(orderItemsData, { transaction: t });
 
-        // Create payment record
         const payment = await payments.create({
             orderId: newOrder.id,
             userId: userId,
@@ -89,16 +82,13 @@ const checkout = asyncErrorHandler(async (req, res) => {
             status: 'pending',
         }, { transaction: t });
 
-        // Update cart status to completed
         cart.status = 'completed';
         await cart.save({ transaction: t });
 
         return { order: newOrder, payment };
     });
 
-    // Queue background jobs (non-blocking) - High priority for immediate processing
     try {
-        // Queue payment processing job with high priority
         await addJob(
             paymentQueue,
             'process-payment',
@@ -111,18 +101,15 @@ const checkout = asyncErrorHandler(async (req, res) => {
                 }
             },
             {
-                priority: QUEUE_CONFIG.JOB_OPTIONS.PRIORITY.HIGH, // High priority for payment
+                priority: QUEUE_CONFIG.JOB_OPTIONS.PRIORITY.HIGH,
             }
         );
 
         console.log(`Payment job queued for order ${order.order.id}`);
     } catch (error) {
         console.error('Error queueing payment job:', error);
-        // Don't fail the checkout if job queueing fails
-        // In production, you might want to log to monitoring system
     }
 
-    // Return order immediately (payment processing happens in background)
     res.status(STATUS_CODES.CREATED).json({
         statusCode: STATUS_CODES.CREATED,
         message: "Order created successfully. Payment processing in progress.",
@@ -137,7 +124,6 @@ const checkout = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Get order by ID
 const getOrder = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { orderId } = req.params;
@@ -184,7 +170,6 @@ const getOrder = asyncErrorHandler(async (req, res) => {
     });
 });
 
-// Get all orders for user
 const getUserOrders = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { paginatedResponse } = require('../../middlewares/paginate');

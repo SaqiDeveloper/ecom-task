@@ -56,9 +56,6 @@ npm run worker:payment
 
 # Start notification worker
 npm run worker:notification
-
-# Start all workers in one process
-npm run worker:all
 ```
 
 ## Scaling for High Concurrency

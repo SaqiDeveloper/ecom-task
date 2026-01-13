@@ -1,37 +1,23 @@
-/**
- * Payment Processing Worker
- * Designed for high concurrency (5M orders in parallel)
- * Can be run in multiple instances for horizontal scaling
- * Run: node workers/payment.worker.js
- * Or: npm run worker:payment
- */
-
 const { Worker } = require('bullmq');
 const { QUEUE_CONFIG, redisConnection } = require('../config/queue');
 const { payments, orders } = require('../models');
 
-// Process payment job
 const processPayment = async (job) => {
   const { paymentId, orderId, paymentData } = job.data;
   
   console.log(`[Payment Worker ${process.pid}] Processing payment ${paymentId} for order ${orderId}`);
 
-  // Find payment record
   const payment = await payments.findByPk(paymentId);
   if (!payment) {
     throw new Error(`Payment ${paymentId} not found`);
   }
 
-  // Update payment status to processing
   payment.status = 'processing';
   await payment.save();
 
-  // Simulate payment processing (replace with actual payment gateway integration)
-  // For high concurrency, use connection pooling and async operations
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated delay
+  await new Promise(resolve => setTimeout(resolve, 1000)); 
 
-  // Simulate payment success (in production, integrate with payment gateway)
-  const paymentSuccess = Math.random() > 0.1; // 90% success rate for demo
+  const paymentSuccess = Math.random() > 0.1;
 
   if (paymentSuccess) {
     // Update payment status
@@ -39,7 +25,6 @@ const processPayment = async (job) => {
     payment.transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     await payment.save();
 
-    // Update order payment status
     const order = await orders.findByPk(orderId);
     if (order) {
       order.paymentStatus = 'completed';
@@ -47,7 +32,6 @@ const processPayment = async (job) => {
       await order.save();
     }
 
-    // Queue notification job with high priority
     const { notificationQueue, addJob } = require('../config/queue');
     await addJob(
       notificationQueue,
@@ -73,7 +57,6 @@ const processPayment = async (job) => {
       await order.save();
     }
 
-    // Queue payment failed notification
     const { notificationQueue, addJob } = require('../config/queue');
     await addJob(
       notificationQueue,
@@ -92,7 +75,6 @@ const processPayment = async (job) => {
   }
 };
 
-// Create worker
 const createPaymentWorker = () => {
   const worker = new Worker(
     QUEUE_CONFIG.QUEUES.PAYMENT_PROCESSING,

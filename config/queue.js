@@ -1,14 +1,12 @@
 const { Queue, Worker, QueueEvents } = require('bullmq');
 const Redis = require('ioredis');
 
-// Redis connection configuration for BullMQ
 const redisConnection = {
   host: process.env.REDIS_HOST || 'localhost',
   port: process.env.REDIS_PORT || 6379,
   password: process.env.REDIS_PASSWORD || undefined,
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
-  // Connection pool for high concurrency
   lazyConnect: true,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
@@ -16,39 +14,30 @@ const redisConnection = {
   },
 };
 
-// Create Redis connection
 const redis = new Redis(redisConnection);
 
-// Queue configuration for high concurrency (5M orders)
 const QUEUE_CONFIG = {
-  // Queue names
   QUEUES: {
     PAYMENT_PROCESSING: 'payment-processing',
     NOTIFICATIONS: 'notifications',
     ORDER_PROCESSING: 'order-processing',
   },
   
-  // Job options
   JOB_OPTIONS: {
-    // Retry configuration
     attempts: 3,
     backoff: {
       type: 'exponential',
       delay: 2000,
     },
-    
-    // Remove completed jobs after 1 hour (to save memory)
     removeOnComplete: {
-      age: 3600, // 1 hour
-      count: 1000, // Keep last 1000 jobs
+      age: 3600,
+      count: 1000,
     },
     
-    // Remove failed jobs after 24 hours
     removeOnFail: {
-      age: 86400, // 24 hours
+      age: 86400,
     },
     
-    // Priority levels (1-20, higher = more priority)
     PRIORITY: {
       HIGH: 20,
       MEDIUM: 10,
@@ -56,23 +45,16 @@ const QUEUE_CONFIG = {
     },
   },
   
-  // Worker configuration for high concurrency
   WORKER_CONFIG: {
-    // Concurrency per worker (process multiple jobs in parallel)
     concurrency: 10,
-    
-    // Connection pool size
     connection: redisConnection,
-    
-    // Limiter for rate limiting (optional)
     limiter: {
-      max: 100, // Max 100 jobs
-      duration: 1000, // Per second
+      max: 100,
+      duration: 1000,
     },
   },
 };
 
-// Initialize queues
 const paymentQueue = new Queue(QUEUE_CONFIG.QUEUES.PAYMENT_PROCESSING, {
   connection: redisConnection,
   defaultJobOptions: QUEUE_CONFIG.JOB_OPTIONS,
@@ -88,7 +70,6 @@ const orderQueue = new Queue(QUEUE_CONFIG.QUEUES.ORDER_PROCESSING, {
   defaultJobOptions: QUEUE_CONFIG.JOB_OPTIONS,
 });
 
-// Queue events for monitoring
 const paymentQueueEvents = new QueueEvents(QUEUE_CONFIG.QUEUES.PAYMENT_PROCESSING, {
   connection: redisConnection,
 });
@@ -97,7 +78,6 @@ const notificationQueueEvents = new QueueEvents(QUEUE_CONFIG.QUEUES.NOTIFICATION
   connection: redisConnection,
 });
 
-// Event listeners for monitoring
 paymentQueueEvents.on('completed', ({ jobId }) => {
   console.log(`Payment job ${jobId} completed`);
 });
@@ -114,7 +94,6 @@ notificationQueueEvents.on('failed', ({ jobId, failedReason }) => {
   console.error(`Notification job ${jobId} failed:`, failedReason);
 });
 
-// Helper function to add job to queue
 const addJob = async (queue, jobName, data, options = {}) => {
   try {
     const job = await queue.add(jobName, data, {
@@ -128,7 +107,6 @@ const addJob = async (queue, jobName, data, options = {}) => {
   }
 };
 
-// Get queue stats
 const getQueueStats = async (queue) => {
   try {
     const [waiting, active, completed, failed, delayed] = await Promise.all([
@@ -154,7 +132,6 @@ const getQueueStats = async (queue) => {
   }
 };
 
-// Health check
 const healthCheck = async () => {
   try {
     await redis.ping();
@@ -177,7 +154,6 @@ const healthCheck = async () => {
   }
 };
 
-// Close connections gracefully
 const closeConnections = async () => {
   try {
     await paymentQueue.close();
@@ -193,16 +169,12 @@ const closeConnections = async () => {
 };
 
 module.exports = {
-  // Queues
   paymentQueue,
   notificationQueue,
   orderQueue,
-  
-  // Queue events
   paymentQueueEvents,
   notificationQueueEvents,
   
-  // Helper functions
   addJob,
   getQueueStats,
   healthCheck,

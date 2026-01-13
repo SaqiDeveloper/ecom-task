@@ -1,23 +1,14 @@
-/**
- * Notification Worker
- * Designed for high concurrency
- * Can be run in multiple instances for horizontal scaling
- * Run: node workers/notification.worker.js
- * Or: npm run worker:notification
- */
 
 const { Worker } = require('bullmq');
 const { QUEUE_CONFIG, redisConnection } = require('../config/queue');
 const { orders, User } = require('../models');
 
-// Process notification job
 const processNotification = async (job) => {
   const { type, orderId, userId, reason } = job.data;
   
   console.log(`[Notification Worker ${process.pid}] Processing ${type} notification for order ${orderId}`);
 
   try {
-    // Fetch order and user details
     const order = await orders.findByPk(orderId, {
       include: [
         {
@@ -33,33 +24,18 @@ const processNotification = async (job) => {
     }
 
     if (type === 'order-confirmation') {
-      // Send order confirmation email
       if (order.User && order.User.email) {
         console.log(`[Notification Worker ${process.pid}] Sending email to ${order.User.email} for order ${order.orderNumber}`);
-        // TODO: Integrate with email service (e.g., SendGrid, AWS SES, Nodemailer)
-        // Use connection pooling for high concurrency
-        // await emailService.send({
-        //   to: order.User.email,
-        //   subject: `Order Confirmation - ${order.orderNumber}`,
-        //   template: 'order-confirmation',
-        //   data: { order, user: order.User }
-        // });
+       
       }
 
-      // Send SMS notification
       if (order.User && order.User.phone) {
         console.log(`[Notification Worker ${process.pid}] Sending SMS to ${order.User.phone} for order ${order.orderNumber}`);
-        // TODO: Integrate with SMS service (e.g., Twilio, AWS SNS)
-        // await smsService.send({
-        //   to: order.User.phone,
-        //   message: `Your order ${order.orderNumber} has been confirmed. Total: $${order.totalAmount}`
-        // });
+       
       }
     } else if (type === 'payment-failed') {
-      // Send payment failed notification
       if (order.User && order.User.email) {
         console.log(`[Notification Worker ${process.pid}] Sending payment failed email to ${order.User.email}`);
-        // TODO: Integrate with email service
       }
     }
 
@@ -71,7 +47,6 @@ const processNotification = async (job) => {
   }
 };
 
-// Create worker
 const createNotificationWorker = () => {
   const worker = new Worker(
     QUEUE_CONFIG.QUEUES.NOTIFICATIONS,
@@ -102,7 +77,6 @@ const createNotificationWorker = () => {
   return worker;
 };
 
-// Start worker
 const startNotificationWorker = () => {
   console.log(`[Notification Worker ${process.pid}] Starting...`);
   const worker = createNotificationWorker();
@@ -111,7 +85,6 @@ const startNotificationWorker = () => {
   return worker;
 };
 
-// Handle graceful shutdown
 process.on('SIGTERM', async () => {
   console.log(`[Notification Worker ${process.pid}] SIGTERM received, shutting down gracefully...`);
   if (worker) {
@@ -128,7 +101,6 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Start worker if run directly
 let worker;
 if (require.main === module) {
   worker = startNotificationWorker();

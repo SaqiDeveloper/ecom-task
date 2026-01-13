@@ -33,7 +33,6 @@ const startServer = async () => {
       console.log('To start workers:');
       console.log('  - npm run worker:payment');
       console.log('  - npm run worker:notification');
-      console.log('  - npm run worker:all (all workers)');
     });
   } catch (error) {
     console.error('Unable to connect to the database:', error);

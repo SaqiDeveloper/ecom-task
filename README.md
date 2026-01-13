@@ -105,9 +105,6 @@ npm run worker:payment
 
 # Terminal 3 - Notification Worker
 npm run worker:notification
-
-# Or start all workers in one process
-npm run worker:all
 ```
 
 ### Production Mode with PM2
@@ -169,7 +166,6 @@ npm run restart:pm2     # Restart PM2 processes
 # Workers
 npm run worker:payment      # Start payment worker
 npm run worker:notification # Start notification worker
-npm run worker:all         # Start all workers
 
 # Monitoring
 npm run queue:monitor      # Monitor queue health and statistics
