@@ -16,10 +16,10 @@ A scalable e-commerce API built with Node.js, Express, PostgreSQL, and BullMQ fo
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** (v14 or higher)
-- **PostgreSQL** (v12 or higher)
-- **Redis** (v6 or higher)
-- **npm** or **yarn**
+- **Node.js** (v14 or higher) - Currently tested with v22.17.1
+- **PostgreSQL** (v12 or higher) - Currently tested with v17.7
+- **Redis** (v6 or higher) - Currently tested with v7.0.15
+- **npm** (v6 or higher) - Currently tested with v10.9.2
 
 ## Installation
 
