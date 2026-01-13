@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
-    basePrice: {
+    price: {
       type: DataTypes.DECIMAL,
       allowNull: true,
       defaultValue: 0.00
