@@ -3,7 +3,7 @@ const {
   Model, Sequelize
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class carts extends Model {
+  class orders extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,21 +11,25 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      carts.belongsTo(models.User, {
+      orders.belongsTo(models.User, {
         foreignKey: 'userId',
         as: 'User'
       });
-      carts.hasMany(models.cartItems, {
+      orders.belongsTo(models.carts, {
         foreignKey: 'cartId',
-        as: 'CartItems'
+        as: 'Cart'
       });
-      carts.hasMany(models.orders, {
-        foreignKey: 'cartId',
-        as: 'Orders'
+      orders.hasMany(models.orderItems, {
+        foreignKey: 'orderId',
+        as: 'OrderItems'
+      });
+      orders.hasMany(models.payments, {
+        foreignKey: 'orderId',
+        as: 'Payments'
       });
     }
   }
-  carts.init({
+  orders.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: Sequelize.literal("gen_random_uuid()"),
@@ -36,22 +40,40 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    status: {
-      type: DataTypes.ENUM('active', 'completed', 'abandoned'),
+    cartId: {
+      type: DataTypes.UUID,
       allowNull: false,
-      defaultValue: 'active',
+    },
+    orderNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'processing', 'confirmed', 'shipped', 'delivered', 'cancelled'),
+      allowNull: false,
+      defaultValue: 'pending',
     },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       defaultValue: 0.00,
     },
+    shippingAddress: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
+    paymentStatus: {
+      type: DataTypes.ENUM('pending', 'processing', 'completed', 'failed', 'refunded'),
+      allowNull: false,
+      defaultValue: 'pending',
+    },
   }, {
     sequelize,
-    modelName: 'carts',
+    modelName: 'orders',
     timestamps: true,
     underscored: false,
   });
-  return carts;
+  return orders;
 };
 

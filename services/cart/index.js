@@ -108,20 +108,19 @@ const addItemToCart = asyncErrorHandler(async (req, res) => {
     let cartItem;
     if (existingItem) {
         // Update quantity
-        existingItem.quantity += quantity || 1;
+        existingItem.quantity += quantity;
         existingItem.subtotal = existingItem.quantity * itemPrice;
         await existingItem.save();
         cartItem = existingItem;
     } else {
         // Create new item
-        const qty = quantity || 1;
         cartItem = await cartItems.create({
             cartId: cart.id,
             productId: productId,
             variantId: variantId || null,
-            quantity: qty,
+            quantity: quantity,
             price: itemPrice,
-            subtotal: qty * itemPrice
+            subtotal: quantity * itemPrice
         });
     }
 
@@ -140,13 +139,6 @@ const updateCartItem = asyncErrorHandler(async (req, res) => {
     const userId = req.user.id;
     const { itemId } = req.params;
     const { quantity } = req.body;
-
-    if (!quantity || quantity < 1) {
-        return res.status(STATUS_CODES.BAD_REQUEST).json({
-            statusCode: STATUS_CODES.BAD_REQUEST,
-            message: "Quantity must be at least 1"
-        });
-    }
 
     // Find cart item and verify it belongs to user's cart
     const cartItem = await cartItems.findOne({

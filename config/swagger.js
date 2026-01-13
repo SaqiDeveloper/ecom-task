@@ -302,6 +302,156 @@ const options = {
             },
           },
         },
+        Order: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Order ID',
+            },
+            userId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'User ID',
+            },
+            cartId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Cart ID',
+            },
+            orderNumber: {
+              type: 'string',
+              description: 'Order number (auto-generated, format: ORD-00000001)',
+              readOnly: true,
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'processing', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+              description: 'Order status',
+            },
+            totalAmount: {
+              type: 'number',
+              format: 'decimal',
+              description: 'Total order amount',
+            },
+            shippingAddress: {
+              type: 'object',
+              description: 'Shipping address',
+              nullable: true,
+            },
+            paymentStatus: {
+              type: 'string',
+              enum: ['pending', 'processing', 'completed', 'failed', 'refunded'],
+              description: 'Payment status',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            OrderItems: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/OrderItem',
+              },
+            },
+            Payments: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Payment',
+              },
+            },
+          },
+        },
+        OrderItem: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            orderId: {
+              type: 'string',
+              format: 'uuid',
+            },
+            productId: {
+              type: 'string',
+              format: 'uuid',
+            },
+            variantId: {
+              type: 'string',
+              format: 'uuid',
+              nullable: true,
+            },
+            quantity: {
+              type: 'integer',
+            },
+            price: {
+              type: 'number',
+              format: 'decimal',
+            },
+            subtotal: {
+              type: 'number',
+              format: 'decimal',
+            },
+            Product: {
+              $ref: '#/components/schemas/Product',
+            },
+            Variant: {
+              $ref: '#/components/schemas/ProductVariant',
+              nullable: true,
+            },
+          },
+        },
+        Payment: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            orderId: {
+              type: 'string',
+              format: 'uuid',
+            },
+            userId: {
+              type: 'string',
+              format: 'uuid',
+            },
+            amount: {
+              type: 'number',
+              format: 'decimal',
+            },
+            paymentMethod: {
+              type: 'string',
+              enum: ['cash', 'card', 'online', 'wallet'],
+            },
+            status: {
+              type: 'string',
+              enum: ['pending', 'processing', 'completed', 'failed', 'refunded'],
+            },
+            transactionId: {
+              type: 'string',
+              nullable: true,
+            },
+            paymentDetails: {
+              type: 'object',
+              nullable: true,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
       },
     },
     // Security is applied per endpoint, not globally

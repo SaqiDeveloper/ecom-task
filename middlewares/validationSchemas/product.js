@@ -1,93 +1,58 @@
 const Joi = require("joi");
 
-// Schema for product body validation
-const productSchema = Joi.object({
-  name: Joi.string().required().max(255).messages({
-    "string.empty": "Product name is required.",
+// Create product validation schema
+const createProductSchema = Joi.object({
+  name: Joi.string().trim().min(1).max(255).required().messages({
+    "string.base": "Name must be a string",
+    "string.empty": "Name cannot be empty",
+    "string.min": "Name must be at least 1 character long",
+    "string.max": "Name must not exceed 255 characters",
+    "any.required": "Name is required",
   }),
-  pictureId: Joi.string().uuid().required().messages({
-    "string.guid": "Picture ID must be a valid UUID.",
-    "any.required": "Picture ID is required.",
+  desc: Joi.string().trim().allow(null, "").optional().messages({
+    "string.base": "Description must be a string",
   }),
-  animationId: Joi.string().uuid(),
-  categoryId: Joi.string().uuid().required().messages({
-    "string.guid": "Category ID must be a valid UUID.",
-    "any.required": "Category ID is required.",
+  isActive: Joi.boolean().optional().messages({
+    "boolean.base": "isActive must be a boolean",
   }),
-  prices: Joi.object({
-    1: Joi.number().positive().required().messages({
-      "number.base": "Price for 1 day must be a number.",
-      "number.positive": "Price for 1 day must be a positive number.",
-      "any.required": "Price for 1 day is required.",
-    }),
-    7: Joi.number().positive().required().messages({
-      "number.base": "Price for 7 days must be a number.",
-      "number.positive": "Price for 7 days must be a positive number.",
-      "any.required": "Price for 7 days is required.",
-    }),
-    15: Joi.number().positive().required().messages({
-      "number.base": "Price for 15 days must be a number.",
-      "number.positive": "Price for 16 days must be a positive number.",
-      "any.required": "Price for 15 days is required.",
-    }),
-    30: Joi.number().positive().required().messages({
-      "number.base": "Price for 30 days must be a number.",
-      "number.positive": "Price for 30 days must be a positive number.",
-      "any.required": "Price for 30 days is required.",
-    }),
-  })
-    .required()
-    .messages({
-      "object.base": "Prices must be an object with valid keys.",
-      "any.required": "Prices are required.",
-    }),
-
-  type: Joi.string().empty('')
-    .valid(
-      "frame",
-      "effect",
-      "entrance_effect",
-      "batch",
-      "background",
-      "nickname",
-      "data_card",
-      "theme",
-    )
-    .required()
-    .messages({
-      "any.only":
-        "Type must be one of 'frame', 'effect', 'entrance_effect', 'batch', 'background', 'nickname', 'theme', or 'data_card'.",
-      "any.required": "Type is required.",
-    }),
-});
-
-// Schema for category params validation
-const productCategoryParamSchema = Joi.object({
-  categoryId: Joi.string().uuid().required().messages({
-    "string.guid": "Category ID must be a valid UUID.",
-    "any.required": "Category ID is required in params.",
+  price: Joi.number().min(0).required().messages({
+    "number.base": "Price must be a number",
+    "number.min": "Price must be 0 or greater",
+    "any.required": "Price is required",
   }),
 });
 
-// Schema for category params validation
+// Update product validation schema
+const updateProductSchema = Joi.object({
+  name: Joi.string().trim().min(1).max(255).optional().messages({
+    "string.base": "Name must be a string",
+    "string.empty": "Name cannot be empty",
+    "string.min": "Name must be at least 1 character long",
+    "string.max": "Name must not exceed 255 characters",
+  }),
+  desc: Joi.string().trim().allow(null, "").optional().messages({
+    "string.base": "Description must be a string",
+  }),
+  isActive: Joi.boolean().optional().messages({
+    "boolean.base": "isActive must be a boolean",
+  }),
+  price: Joi.number().min(0).optional().messages({
+    "number.base": "Price must be a number",
+    "number.min": "Price must be 0 or greater",
+  }),
+});
+
+// Product ID parameter validation
 const productIdParamSchema = Joi.object({
   productId: Joi.string().uuid().required().messages({
-    "string.guid": "Product ID must be a valid UUID.",
-    "any.required": "Product ID is required in params.",
-  }),
-});
-
-// active product
-const productActive = Joi.object({
-  action: Joi.string().valid("active", "inactive").required().messages({
-    "any.only": "Action must be either 'active' or 'inactive'.",
-    "any.required": "Action is required.",
+    "string.guid": "Product ID must be a valid UUID",
+    "any.required": "Product ID is required",
   }),
 });
 
 module.exports = {
-  productSchema,
-  productCategoryParamSchema,
+  createProductSchema,
+  updateProductSchema,
   productIdParamSchema,
-  productActive,
 };
+
