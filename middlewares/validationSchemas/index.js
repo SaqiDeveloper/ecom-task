@@ -83,4 +83,9 @@ module.exports = {
   updateCustomer: require('./customerSupport').update,
   donationLogHistory: require('./walletHistory').donationLogHistory,
   loginAgency: require('./loginAgency'),
+  signUpSchema: require('./auth').signUpSchema,
+  loginSchema: require('./auth').loginSchema,
+  adminLoginSchema: require('./auth').adminLoginSchema,
+  requestOTPSchema: require('./auth').requestOTPSchema,
+  verifyOTPSchema: require('./auth').verifyOTPSchema,
 };

@@ -2,52 +2,58 @@
 const { Model, Sequelize, DataTypes } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Otp extends Model {
     static associate(models) {
-      // User.hasMany(models.BusinessUser, { foreignKey: 'userId', as: 'businessUsers' });
-      User.belongsToMany(models.Business, {
-        through: models.BusinessUser,
-        as: "businesses",
-        foreignKey: "userId",
+      Otp.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
       });
     }
   }
-  User.init({
+  
+  Otp.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: Sequelize.literal("gen_random_uuid()"),
       allowNull: false,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     phone: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: true,
     },
-    isSuperAdmin: {
+    otpHash: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.ENUM('email', 'phone'),
+      allowNull: false,
+    },
+    expiresAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    isUsed: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
     },
   }, {
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
+    modelName: 'Otp',
+    tableName: 'otps',
     timestamps: true,
   });
 
-  return User;
+  return Otp;
 };
+

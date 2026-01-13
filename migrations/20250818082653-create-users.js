@@ -22,11 +22,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      picture: {
-        type: Sequelize.STRING
-      },
       phone: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: true
       },
       isSuperAdmin: {
         type: Sequelize.BOOLEAN,
@@ -47,6 +46,8 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+    await queryInterface.addIndex('users', ['email']);
+    await queryInterface.addIndex('users', ['phone']);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('users');
