@@ -24,7 +24,7 @@ const createProduct = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Product created successfully",
+        message: TEXTS.PRODUCT_CREATED,
         data: newProduct
     })
 
@@ -41,13 +41,13 @@ const getProduct = asyncErrorHandler(async (req, res) => {
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Product not found"
+            message: TEXTS.PRODUCT_NOT_FOUND
         })
     }
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Product fetched successfully",
+        message: TEXTS.PRODUCT_FETCHED,
         data: product
     })
 
@@ -70,7 +70,7 @@ const getAllProducts = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Products fetched successfully",
+        message: TEXTS.PRODUCTS_FETCHED,
         data: result
     })
 });
@@ -84,7 +84,7 @@ const updateProduct = asyncErrorHandler(async (req, res) => {
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Product not found"
+            message: TEXTS.PRODUCT_NOT_FOUND
         })
     }
 
@@ -103,7 +103,7 @@ const updateProduct = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Product updated successfully"
+        message: TEXTS.PRODUCT_UPDATED
     })
 });
 
@@ -116,7 +116,7 @@ const deleteProduct = asyncErrorHandler(async (req, res) => {
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Product not found"
+            message: TEXTS.PRODUCT_NOT_FOUND
         })
     }
 
@@ -124,7 +124,7 @@ const deleteProduct = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Product deleted successfully"
+        message: TEXTS.PRODUCT_DELETED
     })
 });
 

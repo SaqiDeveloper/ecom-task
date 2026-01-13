@@ -13,7 +13,7 @@ const createVariant = asyncErrorHandler(async (req, res) => {
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Product not found"
+            message: TEXTS.PRODUCT_NOT_FOUND
         })
     }
 
@@ -28,7 +28,7 @@ const createVariant = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Variant created successfully",
+        message: TEXTS.VARIANT_CREATED,
         data: newVariant
     })
 
@@ -43,7 +43,7 @@ const getVariant = asyncErrorHandler(async (req, res) => {
     if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Product not found"
+            message: TEXTS.PRODUCT_NOT_FOUND
         })
     }
 
@@ -53,7 +53,7 @@ const getVariant = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Variants fetched successfull",
+        message: TEXTS.VARIANTS_FETCHED,
         data: variants
     })
 });
@@ -74,7 +74,7 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
 
         res.status(STATUS_CODES.SUCCESS).json({
             statusCode: STATUS_CODES.SUCCESS,
-            message: "Variants fetched successfully",
+            message: TEXTS.VARIANTS_FETCHED,
             data: variants || []
         })
     } catch (error) {
@@ -96,7 +96,7 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
     if (!variant) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Variant not found"
+            message: TEXTS.VARIANT_NOT_FOUND
         })
     }
 
@@ -110,7 +110,7 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Variant updated successfully"
+        message: TEXTS.VARIANT_UPDATED
     })
 });
 
@@ -123,7 +123,7 @@ const deleteVariant = asyncErrorHandler(async (req, res) => {
     if (!variant) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Variant not found"
+            message: TEXTS.VARIANT_NOT_FOUND
         })
     }
 
@@ -131,7 +131,7 @@ const deleteVariant = asyncErrorHandler(async (req, res) => {
 
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Variant deleted successfully"
+        message: TEXTS.VARIANT_DELETED
     })
 
 });

@@ -94,10 +94,6 @@ npm run worker:notification
 
 ## Monitoring
 
-### Queue Statistics:
-```bash
-npm run queue:monitor
-```
 
 This shows:
 - Queue health

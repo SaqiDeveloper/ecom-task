@@ -24,5 +24,19 @@ module.exports = {
       OTP_SENT: "Otp sent Successfully!",
       OTP_VERIFIED: "Otp verified Successfully!",
       INVALID_OTP: "Invalid Otp",
+      // Product messages
+      PRODUCT_CREATED: "Product created successfully",
+      PRODUCT_NOT_FOUND: "Product not found",
+      PRODUCT_FETCHED: "Product fetched successfully",
+      PRODUCTS_FETCHED: "Products fetched successfully",
+      PRODUCT_UPDATED: "Product updated successfully",
+      PRODUCT_DELETED: "Product deleted successfully",
+      // Product Variant messages
+      VARIANT_CREATED: "Product variant created successfully",
+      VARIANT_NOT_FOUND: "Product variant not found",
+      VARIANT_FETCHED: "Product variant fetched successfully",
+      VARIANTS_FETCHED: "Product variants fetched successfully",
+      VARIANT_UPDATED: "Product variant updated successfully",
+      VARIANT_DELETED: "Product variant deleted successfully",
     },
   };

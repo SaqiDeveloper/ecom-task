@@ -166,9 +166,6 @@ npm run restart:pm2     # Restart PM2 processes
 # Workers
 npm run worker:payment      # Start payment worker
 npm run worker:notification # Start notification worker
-
-# Monitoring
-npm run queue:monitor      # Monitor queue health and statistics
 ```
 
 ## Project Structure
@@ -256,9 +253,6 @@ This project uses **BullMQ** for background job processing. See [README-QUEUE.md
 ### Quick Queue Commands
 
 ```bash
-# Monitor queue health
-npm run queue:monitor
-
 # Check Redis connection
 redis-cli ping
 ```
