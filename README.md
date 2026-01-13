@@ -62,32 +62,7 @@ REDIS_PORT=6379
 REDIS_PASSWORD= (optional)
 ```
 
-### 4. Database Setup
-
-#### Create PostgreSQL Database
-
-```bash
-# Connect to PostgreSQL
-psql -U postgres
-
-# Create database
-CREATE DATABASE your_database_name;
-
-# Exit
-\q
-```
-
-#### Run Migrations
-
-```bash
-# Run all migrations
-npx sequelize-cli db:migrate
-
-# Or if using npm script (if available)
-npm run migrate
-```
-
-### 5. Install and Start Redis
+### 4. Install and Start Redis
 
 #### Ubuntu/Debian
 ```bash
@@ -291,37 +266,6 @@ npm run queue:monitor
 # Check Redis connection
 redis-cli ping
 ```
-
-## Troubleshooting
-
-### Database Connection Issues
-
-- Verify PostgreSQL is running: `sudo systemctl status postgresql`
-- Check database credentials in `.env`
-- Ensure database exists: `psql -U postgres -l`
-
-### Redis Connection Issues
-
-- Verify Redis is running: `redis-cli ping`
-- Check Redis configuration in `.env`
-- Start Redis: `sudo systemctl start redis-server` or `redis-server`
-
-### Port Already in Use
-
-```bash
-# Find process using port 3000
-lsof -i :3000
-
-# Kill the process
-kill -9 <PID>
-```
-
-## Development Tips
-
-1. **Hot Reload**: Development server uses `nodemon` for automatic restarts
-2. **API Testing**: Use Swagger UI at `/docs` for testing endpoints
-3. **Logs**: Check console for detailed error messages
-4. **Database**: Use Sequelize CLI for migrations and model generation
 
 ## License
 
