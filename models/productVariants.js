@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'businessId',
         as: 'Business'
       });
-      productVariants.belongsTo(models.categories, {
-        foreignKey: 'categoryId',
-        as: 'Category'
-      });
     }
   }
   productVariants.init({
@@ -34,10 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     businessId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
-    categoryId: {
       type: DataTypes.UUID,
       allowNull: false,
     },

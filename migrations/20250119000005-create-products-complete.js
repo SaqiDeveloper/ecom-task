@@ -20,16 +20,6 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      categoryId: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model: 'categories',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -67,7 +57,6 @@ module.exports = {
 
     // Add indexes for better performance
     await queryInterface.addIndex('products', ['businessId']);
-    await queryInterface.addIndex('products', ['categoryId']);
     await queryInterface.addIndex('products', ['name']);
     await queryInterface.addIndex('products', ['isVariable']);
     await queryInterface.addIndex('products', ['isActive']);

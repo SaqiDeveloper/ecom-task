@@ -6,14 +6,14 @@ const { Op } = require('sequelize');
 
 const createVariant = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, categoryId, productId } = req.params;
+    const { businessId, productId } = req.params;
 
     const product = await products.findByPk(productId);
 
-    if (!businessId || !categoryId || !product) {
+    if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "business , category or Product not found"
+            message: "Product not found"
         })
     }
 
@@ -21,7 +21,6 @@ const createVariant = asyncErrorHandler(async (req, res) => {
 
     const newVariant = await productVariants.create({
         businessId: businessId,
-        categoryId: categoryId,
         productId: productId,
         name: name,
         price: price,
@@ -45,10 +44,10 @@ const getVariant = asyncErrorHandler(async (req, res) => {
 
     const product = await products.findByPk(productId);
 
-    if (!businessId || !product) {
+    if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "business or Product not found"
+            message: "Product not found"
         })
     }
 
@@ -66,15 +65,6 @@ const getVariant = asyncErrorHandler(async (req, res) => {
 const getAllVariants = asyncErrorHandler(async (req, res) => {
     const { businessId } = req.params;
 
-    console.log("getAllVariants called with businessId:", businessId);
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business not found"
-        })
-    }
-
     try {
         let where = {}
         if (req?.query?.search && req.query.search.trim() !== "") {
@@ -82,8 +72,6 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
                 [Op.iLike]: `${req.query.search}%`
             };
         }
-
-        console.log("Querying variants for businessId:", businessId);
 
         // Query variants directly using businessId
         const variants = await productVariants.findAll({
@@ -93,8 +81,6 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
             },
             ...req.pagination
         });
-
-        console.log("Found variants:", variants.length);
 
         res.status(STATUS_CODES.SUCCESS).json({
             statusCode: STATUS_CODES.SUCCESS,
@@ -114,13 +100,6 @@ const getAllVariants = asyncErrorHandler(async (req, res) => {
 const updateVariant = asyncErrorHandler(async (req, res) => {
 
     const { businessId, variantId } = req.params;
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "business not found"
-        })
-    }
 
     const variant = await productVariants.findByPk(variantId);
 
@@ -152,13 +131,6 @@ const updateVariant = asyncErrorHandler(async (req, res) => {
 const deleteVariant = asyncErrorHandler(async (req, res) => {
 
     const { businessId, variantId } = req.params;
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "business not found"
-        })
-    }
 
     const variant = await productVariants.findByPk(variantId);
 

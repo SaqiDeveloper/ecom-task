@@ -1,7 +1,7 @@
 const asyncErrorHandler = require("../../utils/asyncErrorHandler");
 const withTransaction = require("../../utils/withTransaction");
 const { STATUS_CODES, TEXTS } = require("../../config/constants");
-const { categories, products } = require('../../models');
+const { products } = require('../../models');
 const {paginatedResponse} = require('../../middlewares/paginate');
 const { Op } = require('sequelize');
 
@@ -9,22 +9,12 @@ const { Op } = require('sequelize');
 
 const createProduct = asyncErrorHandler(async (req, res) => {
 
-    const { businessId, categoryId } = req.params;
-
-    const category = await categories.findByPk(categoryId);
-
-    if (!businessId || !category) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business & Category not found"
-        })
-    }
+    const { businessId } = req.params;
 
     const { name, desc, isVariable, isActive, price, purchasePrice, profitMargin, stock } = req.body;
 
     const newProduct = await products.create({
         businessId: businessId,
-        categoryId: categoryId,
         name: name,
         desc: desc,
         isVariable: isVariable || false,
@@ -47,50 +37,27 @@ const createProduct = asyncErrorHandler(async (req, res) => {
 
 const getProduct = asyncErrorHandler(async (req, res) => {
 
-    const { businessId , categoryId } = req.params;
+    const { businessId, productId } = req.params;
 
-    const category = await categories.findByPk(categoryId);
+    const product = await products.findByPk(productId);
 
-    if (!businessId || !category) {
+    if (!product) {
         return res.status(STATUS_CODES.NOT_FOUND).json({
             statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business & Category not found"
+            message: "Product not found"
         })
     }
 
-    let where = {}
-    if (req?.query?.search && req.query.search.trim() !== "") {
-        where.name = {
-            [Op.iLike]: `${req.query.search}%`
-        };
-    }
-
-    const { rows, count } = await products.findAndCountAll({
-
-        where : {categoryId:categoryId},
-        ...req.pagination
-    });
-
-    const result = paginatedResponse(rows, count, req.query?.page, req.query?.limit);
-
-
     res.status(STATUS_CODES.SUCCESS).json({
         statusCode: STATUS_CODES.SUCCESS,
-        message: "Products fetched successfull",
-        data: result
+        message: "Product fetched successfully",
+        data: product
     })
 
 });
 
 const getAllProducts = asyncErrorHandler(async (req, res) => {
     const { businessId } = req.params;
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business not found"
-        })
-    }
 
     let where = {}
     if (req?.query?.search && req.query.search.trim() !== "") {
@@ -101,10 +68,6 @@ const getAllProducts = asyncErrorHandler(async (req, res) => {
 
     const { rows, count } = await products.findAndCountAll({
         where: { businessId: businessId },
-        include: [{
-            model: categories,
-            as: 'Category'
-        }],
         ...req.pagination
     });
 
@@ -120,13 +83,6 @@ const getAllProducts = asyncErrorHandler(async (req, res) => {
 const updateProduct = asyncErrorHandler(async (req, res) => {
 
     const { businessId , productId } = req.params;
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business not found"
-        })
-    }
 
     const product = await products.findByPk(productId);
 
@@ -159,13 +115,6 @@ const updateProduct = asyncErrorHandler(async (req, res) => {
 
 const deleteProduct = asyncErrorHandler(async (req, res) => {
  const { businessId , productId } = req.params;
-
-    if (!businessId) {
-        return res.status(STATUS_CODES.NOT_FOUND).json({
-            statusCode: STATUS_CODES.NOT_FOUND,
-            message: "Business not found"
-        })
-    }
 
     const product = await products.findByPk(productId);
 

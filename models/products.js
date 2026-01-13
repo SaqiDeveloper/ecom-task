@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'businessId',
         as: 'Business'
       });
-      products.belongsTo(models.categories, {
-        foreignKey: 'categoryId',
-        as: 'Category'
-      });
     }
   }
   products.init({
@@ -37,10 +33,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-    categoryId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
