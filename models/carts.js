@@ -3,7 +3,7 @@ const {
   Model, Sequelize
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class productVariants extends Model {
+  class carts extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,52 +11,43 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      productVariants.belongsTo(models.products, {
-        foreignKey: 'productId',
-        as: 'Product'
+      carts.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'User'
       });
-      productVariants.hasMany(models.cartItems, {
-        foreignKey: 'variantId',
+      carts.hasMany(models.cartItems, {
+        foreignKey: 'cartId',
         as: 'CartItems'
       });
     }
   }
-  productVariants.init({
-
+  carts.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: Sequelize.literal("gen_random_uuid()"),
       allowNull: false,
       primaryKey: true,
     },
-    productId: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    variantsName: {
-      type: DataTypes.STRING,
+    status: {
+      type: DataTypes.ENUM('active', 'completed', 'abandoned'),
       allowNull: false,
+      defaultValue: 'active',
     },
-    value: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    price: {
+    totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-      defaultValue: 0.00
-    },
-    sku: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      defaultValue: Sequelize.literal("'SKU-' || LPAD(nextval('product_variant_sku_seq')::text, 6, '0')"),
+      defaultValue: 0.00,
     },
   }, {
     sequelize,
-    modelName: 'productVariants',
+    modelName: 'carts',
     timestamps: true,
     underscored: false,
   });
-  return productVariants;
+  return carts;
 };
+

@@ -3,7 +3,7 @@ const {
   Model, Sequelize
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class productVariants extends Model {
+  class cartItems extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,52 +11,64 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      productVariants.belongsTo(models.products, {
+      cartItems.belongsTo(models.carts, {
+        foreignKey: 'cartId',
+        as: 'Cart'
+      });
+      cartItems.belongsTo(models.products, {
         foreignKey: 'productId',
         as: 'Product'
       });
-      productVariants.hasMany(models.cartItems, {
+      cartItems.belongsTo(models.productVariants, {
         foreignKey: 'variantId',
-        as: 'CartItems'
+        as: 'Variant',
+        allowNull: true
       });
     }
   }
-  productVariants.init({
-
+  cartItems.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: Sequelize.literal("gen_random_uuid()"),
       allowNull: false,
       primaryKey: true,
     },
+    cartId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
     productId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    variantsName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    variantId: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
-    value: {
-      type: DataTypes.STRING,
+    quantity: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 1,
+      validate: {
+        min: 1
+      }
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-      defaultValue: 0.00
+      defaultValue: 0.00,
     },
-    sku: {
-      type: DataTypes.STRING,
+    subtotal: {
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-      unique: true,
-      defaultValue: Sequelize.literal("'SKU-' || LPAD(nextval('product_variant_sku_seq')::text, 6, '0')"),
+      defaultValue: 0.00,
     },
   }, {
     sequelize,
-    modelName: 'productVariants',
+    modelName: 'cartItems',
     timestamps: true,
     underscored: false,
   });
-  return productVariants;
+  return cartItems;
 };
+

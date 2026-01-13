@@ -205,6 +205,103 @@ const options = {
             },
           },
         },
+        Cart: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Cart ID',
+            },
+            userId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'User ID',
+            },
+            status: {
+              type: 'string',
+              enum: ['active', 'completed', 'abandoned'],
+              description: 'Cart status',
+              default: 'active',
+            },
+            totalAmount: {
+              type: 'number',
+              format: 'decimal',
+              description: 'Total amount in cart',
+              default: 0.00,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            CartItems: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/CartItem',
+              },
+            },
+          },
+        },
+        CartItem: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Cart Item ID',
+            },
+            cartId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Cart ID',
+            },
+            productId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Product ID',
+            },
+            variantId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'Product Variant ID (optional)',
+              nullable: true,
+            },
+            quantity: {
+              type: 'integer',
+              description: 'Quantity',
+              minimum: 1,
+            },
+            price: {
+              type: 'number',
+              format: 'decimal',
+              description: 'Price per unit',
+            },
+            subtotal: {
+              type: 'number',
+              format: 'decimal',
+              description: 'Subtotal (quantity × price)',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            Product: {
+              $ref: '#/components/schemas/Product',
+            },
+            Variant: {
+              $ref: '#/components/schemas/ProductVariant',
+              nullable: true,
+            },
+          },
+        },
       },
     },
     // Security is applied per endpoint, not globally
